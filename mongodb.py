@@ -8,27 +8,27 @@ from EHAB import TMDBDownloader
 
 class mongodb:
 
-
-    def __init__(self, db_name, col_name):
+    def __init__(self):
         self.myclient = pymongo.MongoClient()
-        self.db = self.myclient[db_name]
-        self.col = self.db[col_name]
+        self.db = self.myclient["movies"]
+        self.col = self.db["posters"]
         self.tmdb_downloader = TMDBDownloader()
-        self.name = self.tmdb_downloader.getname()
         self.fs = gridfs.GridFS(self.db)
 
     # used GridFS to insert data into colum
-    def insert_data(self):
-        name = self.name
-        f = self.tmdb_downloader.getposterURL()
+    def insert_data(self,name):
+        self.name = name
+        movie_id = self.tmdb_downloader.getposterURL(name)[1]
+        f = self.tmdb_downloader.getposterURL(name)[0]
+        print(f)
         h = requests.get(f, stream=True)
         # check if the poster exist by name
-        if self.fs.exists({'filename': name}):
+        if self.fs.exists({'my_id': movie_id}):
             print("already exist")
         else:
             print("adding poster: " + str(self.name))
             # if it doesn't exist then use put to insert into colum
-            self.fs.put(h.raw, filename=self.name)
+            self.fs.put(h.raw , filename=self.name, my_id=movie_id, html=f)
 
     # check if the poster exist before attempting delete
     def del_data(self, name):
@@ -52,7 +52,13 @@ class mongodb:
         for document in x:
             print("poster: " + str(document['filename']))
 
-    def read_movie_name(self):
-        f = self.tmdb_downloader.getposterURL()
-        print(f)
-        return f
+    def read_movie_name(self,name):
+        # check if the poster exist by name
+        if self.fs.exists({'filename': name}):
+            f = self.tmdb_downloader.getposterURL(name)[1]
+            #print(f)
+            return f
+        else:
+            # if it doesn't exist then print to the user
+            print("poster doesnt exist")
+

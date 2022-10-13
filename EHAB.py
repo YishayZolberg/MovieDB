@@ -1,6 +1,5 @@
 import requests
 import os
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,42 +8,37 @@ load_dotenv()
 class TMDBDownloader:
 
     def __init__(self):
-        self.name = "saving private ryan"
         self.api_key = os.getenv('API_KEY')
         self.api_token = os.getenv('ACCESS_TOKEN')
         self.api_url = os.getenv('URL')
         self.CONFIG_PATTERN = 'http://api.themoviedb.org/3/configuration?api_key={key}'
-        self.file_name = self.name
-        search_url = f'https://api.themoviedb.org/3/search/movie?query={self.name}&api_key={self.api_key}'
-        self.request = requests.get(search_url)
 
-    def getname(self):
-        jpg_path1 = self.request.json()
-        j = jpg_path1.get('results')[0].get('original_title')
-        print(j)
-        return j
+
+
 
     def getURL(self):
         url = self.CONFIG_PATTERN.format(key=self.api_key)
-        r = requests.get(url)
         IMG_PATTERN = 'http://api.themoviedb.org/3/movie/{imdbid}/images?api_key={key}'
         r = requests.get(IMG_PATTERN.format(key=self.api_key, imdbid='tt0095016'))
         api_response = r.json()
-        #print(api_response)
         return api_response
 
-    def getposterURL(self):
+
+    def getposterURL(self,name):
         jpg_path = ''
         image_base_url = f'https://image.tmdb.org/t/p/w1280{jpg_path}'
-        request = self.request
+        search_url = f'https://api.themoviedb.org/3/search/movie?query={name}&api_key={self.api_key}'
+        request = requests.get(search_url)
         jpg_path = request.json()
         j = jpg_path.get('results')[0].get('backdrop_path')
+        h = jpg_path.get('results')[0].get('id')
         a = (image_base_url + j)
         #print(a)
-        return a
+        return a,h
 
-    def download_image(self, name):
-        response = requests.get(self.getposterURL())
+    def download_image(self,name):
+        search_url = f'https://api.themoviedb.org/3/search/movie?query={name}&api_key={self.api_key}'
+        response = requests.get(search_url)
         file = open(name, "wb")
         file.write(response.content)
         file.close()

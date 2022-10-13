@@ -9,7 +9,7 @@ load_dotenv()
 class TMDBDownloader:
 
     def __init__(self):
-        self.name = "pitch perfect"
+        self.name = "saving private ryan"
         self.api_key = os.getenv('API_KEY')
         self.api_token = os.getenv('ACCESS_TOKEN')
         self.api_url = os.getenv('URL')
@@ -27,11 +27,10 @@ class TMDBDownloader:
     def getURL(self):
         url = self.CONFIG_PATTERN.format(key=self.api_key)
         r = requests.get(url)
-        config = r.json()
         IMG_PATTERN = 'http://api.themoviedb.org/3/movie/{imdbid}/images?api_key={key}'
         r = requests.get(IMG_PATTERN.format(key=self.api_key, imdbid='tt0095016'))
         api_response = r.json()
-        print(api_response)
+        #print(api_response)
         return api_response
 
     def getposterURL(self):
@@ -41,14 +40,15 @@ class TMDBDownloader:
         jpg_path = request.json()
         j = jpg_path.get('results')[0].get('backdrop_path')
         a = (image_base_url + j)
-        print(a)
+        #print(a)
         return a
 
     def download_image(self, name):
         response = requests.get(self.getposterURL())
-        file = open(name + ".jpg", "wb")
+        file = open(name, "wb")
         file.write(response.content)
         file.close()
+        return response
 
     # api_key= os.getenv('API_KEY')
     # api_token= os.getenv('ACCESS_TOKEN')

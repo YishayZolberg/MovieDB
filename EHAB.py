@@ -1,6 +1,5 @@
 import requests
 import os
-import urllib.request
 
 from dotenv import load_dotenv
 
@@ -10,7 +9,7 @@ load_dotenv()
 class TMDBDownloader:
 
     def __init__(self):
-        self.name = "avatar"
+        self.name = "pitch perfect"
         self.api_key = os.getenv('API_KEY')
         self.api_token = os.getenv('ACCESS_TOKEN')
         self.api_url = os.getenv('URL')
@@ -18,8 +17,6 @@ class TMDBDownloader:
         self.file_name = self.name
         search_url = f'https://api.themoviedb.org/3/search/movie?query={self.name}&api_key={self.api_key}'
         self.request = requests.get(search_url)
-
-
 
     def getname(self):
         jpg_path1 = self.request.json()
@@ -47,9 +44,9 @@ class TMDBDownloader:
         print(a)
         return a
 
-    def download_image(self,name):
+    def download_image(self, name):
         response = requests.get(self.getposterURL())
-        file = open(name+".jpg", "wb")
+        file = open(name + ".jpg", "wb")
         file.write(response.content)
         file.close()
 

@@ -19,22 +19,25 @@ class TMDBDownloader:
     def getURL(self):
         url = self.CONFIG_PATTERN.format(key=self.api_key)
         IMG_PATTERN = 'http://api.themoviedb.org/3/movie/{imdbid}/images?api_key={key}'
-        r = requests.get(IMG_PATTERN.format(key=self.api_key, imdbid='tt0095016'))
-        api_response = r.json()
+        api_response = requests.get(IMG_PATTERN.format(key=self.api_key, imdbid='tt0095016')).json()
         return api_response
 
 
     def getposterURL(self,name):
         jpg_path = ''
+        #the basic image url we need to add the poster backdroppath to the end to get the poster
         image_base_url = f'https://image.tmdb.org/t/p/w1280{jpg_path}'
+        # used to seaaarch for the movie in tmdb by name
         search_url = f'https://api.themoviedb.org/3/search/movie?query={name}&api_key={self.api_key}'
         request = requests.get(search_url)
         jpg_path = request.json()
-        j = jpg_path.get('results')[0].get('backdrop_path')
-        h = jpg_path.get('results')[0].get('id')
-        a = (image_base_url + j)
-        #print(a)
-        return a,h
+        # the backdrop_path to add to the end of the image_base_url
+        backdrop_path = jpg_path.get('results')[0].get('backdrop_path')
+        # get_id = the movie id by tmdb
+        get_id = jpg_path.get('results')[0].get('id')
+        a = (image_base_url + backdrop_path)
+        print(a)
+        return a,get_id
 
     def download_image(self,name):
         search_url = f'https://api.themoviedb.org/3/search/movie?query={name}&api_key={self.api_key}'

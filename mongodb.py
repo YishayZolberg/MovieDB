@@ -34,7 +34,7 @@ class mongodb:
     def del_data(self, name):
         col = self.db["fs.files"]
         a = col.find()
-        print(a)
+        #print(a)
         for x in a:
             if x['filename'] == name:
                 print("deleting " + str(x.get('filename')))
